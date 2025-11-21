@@ -1,0 +1,4 @@
+.score { border-left: 4px solid var(--border); }
+.score.green { border-left-color: var(--green); }
+.score.yellow { border-left-color: var(--yellow); }
+.score.red { border-left-color: var(--red); }
