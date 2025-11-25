@@ -1,27 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  login as loginApi,
-  register as registerApi,
-  getProfile,
-  logout as logoutApi,
-} from "../api/authService";
+import { login as loginApi, register as registerApi, getProfile, logout as logoutApi } from "../api/authService";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async () => {
     try {
       const { data } = await getProfile();
-      console.log("profile data :",data);
-      
       setUser(data);
-    } catch (error) {
+    } catch {
       setUser(null);
-      console.log(error);
-      
     } finally {
       setLoading(false);
     }
@@ -29,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { data } = await loginApi({ email, password });
-    localStorage.setItem("token", data.access_token);
+    localStorage.setItem("token", data.token);
     await fetchProfile();
     return data;
   };
@@ -44,12 +35,10 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await logoutApi();
+    } finally {
       localStorage.removeItem("token");
-    setUser(null);
-    } catch {
-      console.error("Error while logging out");
+      setUser(null);
     }
-    
   };
 
   useEffect(() => {
@@ -65,6 +54,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+const useAuth = () => useContext(AuthContext);
 
-export default AuthContext;
+export { AuthContext, AuthProvider, useAuth };

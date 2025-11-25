@@ -11,12 +11,14 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 
+// ✅ Route protégée pour les utilisateurs connectés
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="loader">Loading...</div>;
   return user ? children : <Navigate to="/login" replace />;
 };
 
+// ✅ Route protégée pour les administrateurs
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="loader">Loading...</div>;
@@ -32,11 +34,18 @@ export default function AppRouter() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* ✅ Routes protégées */}
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/transactions" element={<PrivateRoute><Transactions /></PrivateRoute>} />
           <Route path="/scores" element={<PrivateRoute><Scores /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+
+          {/* ✅ Route admin */}
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
+          {/* ✅ Route fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />

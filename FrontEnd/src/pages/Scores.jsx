@@ -1,36 +1,44 @@
 import { useEffect, useState } from "react";
-import { getScore, getScoreHistory } from "../api/scoreService";
+import { listScores } from "../api/scoreService";
 import ScoreCard from "../components/ScoreCard";
 
 export default function Scores() {
-  const [current, setCurrent] = useState(null);
-  const [history, setHistory] = useState([]);
+  const [scores, setScores] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    try {
+      const { data } = await listScores();
+      // ✅ backend يرجع مصفوفة من النقاط
+      setScores(Array.isArray(data) ? data : data.data);
+    } catch (err) {
+      console.error("Erreur chargement scores:", err);
+      setError("Impossible de charger les scores.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      const s = await getScore();
-      setCurrent(s.data);
-      const h = await getScoreHistory();
-      setHistory(h.data);
-    };
     load();
   }, []);
 
+  if (loading) return <div className="loader">Chargement...</div>;
+  if (error) return <div className="alert">{error}</div>;
+
   return (
-    <>
-      {current && <ScoreCard score={current} />}
-      <div className="card">
-        <h3>Score history</h3>
-        <ul className="list">
-          {history.map((s, idx) => (
-            <li key={idx} className="list-item">
-              <span>{s.valeur}</span>
-              <span className={`badge ${s.couleur}`}>{s.couleur}</span>
-              <span>{s.date_calcul}</span>
-            </li>
+    <section>
+      <h2>Mes Scores</h2>
+      {scores.length === 0 ? (
+        <p>Aucun score disponible.</p>
+      ) : (
+        <div className="grid">
+          {scores.map((s) => (
+            <ScoreCard key={s.id} score={s} />
           ))}
-        </ul>
-      </div>
-    </>
+        </div>
+      )}
+    </section>
   );
 }

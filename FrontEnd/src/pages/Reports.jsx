@@ -1,63 +1,57 @@
 import { useEffect, useState } from "react";
-import { exportReport, listReports, downloadReport } from "../api/reportService";
+import { listReports, downloadReport } from "../api/reportService";
 import ReportList from "../components/ReportList";
 
 export default function Reports() {
   const [reports, setReports] = useState([]);
-  const [range, setRange] = useState({ date_start: "", date_end: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    const { data } = await listReports();
-    setReports(data);
+    try {
+      const { data } = await listReports();
+      // ✅ backend يرجع مصفوفة من التقارير
+      setReports(Array.isArray(data) ? data : data.data);
+    } catch (err) {
+      console.error("Erreur chargement reports:", err);
+      setError("Impossible de charger les rapports.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     load();
   }, []);
 
-  const handleExport = async (e) => {
-    e.preventDefault();
-    await exportReport(range);
-    await load();
+  const handleDownload = async (id) => {
+    try {
+      const response = await downloadReport(id);
+      // ✅ backend يرجع ملف PDF (Blob)
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `report-${id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Erreur téléchargement report:", err);
+      setError("Téléchargement échoué.");
+    }
   };
 
-  const handleDownload = async (id) => {
-    const { data } = await downloadReport(id);
-    const blobUrl = window.URL.createObjectURL(new Blob([data]));
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `report_${id}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(blobUrl);
-  };
+  if (loading) return <div className="loader">Chargement...</div>;
+  if (error) return <div className="alert">{error}</div>;
 
   return (
-    <>
-      <form className="card form" onSubmit={handleExport}>
-        <h3>Export report</h3>
-        <div className="grid">
-          <div>
-            <label>Date start</label>
-            <input
-              type="date"
-              value={range.date_start}
-              onChange={(e) => setRange((r) => ({ ...r, date_start: e.target.value }))}
-              required
-            />
-          </div>
-          <div>
-            <label>Date end</label>
-            <input
-              type="date"
-              value={range.date_end}
-              onChange={(e) => setRange((r) => ({ ...r, date_end: e.target.value }))}
-              required
-            />
-          </div>
-        </div>
-        <button className="btn">Export</button>
-      </form>
-      <ReportList reports={reports} onDownload={handleDownload} />
-    </>
+    <section>
+      <h2>Mes Rapports</h2>
+      {reports.length === 0 ? (
+        <p>Aucun rapport disponible.</p>
+      ) : (
+        <ReportList reports={reports} onDownload={handleDownload} />
+      )}
+    </section>
   );
 }

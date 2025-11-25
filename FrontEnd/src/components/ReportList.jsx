@@ -5,8 +5,8 @@ export default function ReportList({ reports, onDownload }) {
       <ul className="list">
         {reports.map((r) => (
           <li key={r.id} className="list-item">
-            <span>{r.fichier_pdf}</span>
-            <button className="btn outline" onClick={() => onDownload(r.id)}>Download</button>
+            <span>{r.date_start} → {r.date_end}</span>
+            <button className="btn" onClick={() => onDownload(r.id)}>Download</button>
           </li>
         ))}
       </ul>

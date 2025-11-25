@@ -1,11 +1,12 @@
-import "../styles/scores.css";
-
 export default function ScoreCard({ score }) {
-  const colorClass = score.couleur;
   return (
-    <div className={`card score ${colorClass}`}>
-      <h3>Score: {score.valeur}</h3>
-      <p>Date: {new Date(score.date_calcul).toLocaleString()}</p>
+    <div className="card">
+      <h3>Current Score</h3>
+      <p>
+        <strong>Value:</strong> {score.valeur}{" "}
+        <span className={`badge ${score.couleur}`}>{score.couleur}</span>
+      </p>
+      <p><strong>Date:</strong> {score.date_calcul}</p>
     </div>
   );
 }

@@ -5,7 +5,7 @@ export default function UserTable({ users, onDelete, onPromote }) {
       <table className="table">
         <thead>
           <tr>
-            <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th>
+            <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -15,8 +15,10 @@ export default function UserTable({ users, onDelete, onPromote }) {
               <td>{u.name}</td>
               <td>{u.email}</td>
               <td>{u.role}</td>
-              <td className="actions">
-                <button className="btn outline" onClick={() => onPromote(u.id)}>Make admin</button>
+              <td>
+                {u.role !== "admin" && (
+                  <button className="btn" onClick={() => onPromote(u.id)}>Promote</button>
+                )}
                 <button className="btn danger" onClick={() => onDelete(u.id)}>Delete</button>
               </td>
             </tr>

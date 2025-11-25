@@ -11,10 +11,14 @@ export default function Profile() {
       try {
         const { data } = await getProfile();
         console.log("Profile data:", data);
-        
+
+        // ✅ backend يرجع كائن المستخدم مباشرة (id, name, email, role)
         setUser(data);
       } catch (err) {
-        setError("Impossible de charger le profil. Vérifie ton token ou reconnecte-toi. : " + err.message);
+        setError(
+          "Impossible de charger le profil. Vérifie ton token ou reconnecte-toi. : " +
+            err.message
+        );
       } finally {
         setLoading(false);
       }
