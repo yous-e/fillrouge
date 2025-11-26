@@ -4,22 +4,17 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Transaction;
-use App\Models\Score;
-use App\Models\Report;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // إضافة Admin
         $this->call(AdminSeeder::class);
 
-        // إنشاء 10 مستخدمين مع بيانات تجريبية
-        User::factory(10)
-            ->has(Transaction::factory()->count(5)) // كل مستخدم عنده 5 معاملات
-            ->has(Score::factory()->count(3))       // كل مستخدم عنده 3 Scores
-            ->has(Report::factory()->count(2))      // كل مستخدم عنده 2 تقارير
-            ->create();
+        User::factory(10)->create()->each(function ($user) {
+            \App\Models\Transaction::factory(5)->create(['user_id' => $user->id]);
+            \App\Models\Score::factory(3)->create(['user_id' => $user->id]);
+            \App\Models\Report::factory(2)->create(['user_id' => $user->id]);
+        });
     }
 }

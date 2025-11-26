@@ -1,11 +1,25 @@
-import { AuthProvider } from "./context/AuthContext";
-import AppRouter from "./router/AppRouter";
-//import { listScores } from "../api/scoreService";
+import React from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { NotificationProvider } from './context/NotificationContext'
+import { AppProvider } from './context/AppContext'
+import AppRouter from './router'
+import './App.css'
 
-export default function App() {
+function App() {
   return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
-  );
+    <Router>
+      <NotificationProvider>
+        <AuthProvider>
+          <AppProvider>
+            <div className="App">
+              <AppRouter />
+            </div>
+          </AppProvider>
+        </AuthProvider>
+      </NotificationProvider>
+    </Router>
+  )
 }
+
+export default App

@@ -1,0 +1,145 @@
+.score-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.gauge-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+
+.gauge-background {
+  opacity: 0.3;
+}
+
+.gauge-progress {
+  transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease;
+  animation: gauge-fill 1.5s ease-out;
+}
+
+.gauge-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.score-value {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  color: var(--text-color);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.score-max {
+  font-size: var(--font-size-lg);
+  color: var(--text-light);
+  margin-bottom: var(--spacing-sm);
+}
+
+.score-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gauge-legend {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-color.poor {
+  background-color: var(--error-color);
+}
+
+.legend-color.fair {
+  background-color: var(--warning-color);
+}
+
+.legend-color.good {
+  background-color: var(--primary-color);
+}
+
+.legend-color.excellent {
+  background-color: var(--success-color);
+}
+
+@keyframes gauge-fill {
+  from {
+    stroke-dashoffset: 282.6;
+  }
+  to {
+    stroke-dashoffset: var(--dash-offset);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gauge-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  .score-value {
+    font-size: var(--font-size-2xl);
+  }
+
+  .score-max {
+    font-size: var(--font-size-base);
+  }
+
+  .gauge-legend {
+    gap: var(--spacing-sm);
+  }
+
+  .legend-item {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .gauge-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .score-value {
+    font-size: var(--font-size-xl);
+  }
+
+  .gauge-legend {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}

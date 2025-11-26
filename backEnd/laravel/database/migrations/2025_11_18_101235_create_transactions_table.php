@@ -6,31 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('transactions', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
-        $table->string('type');       // revenu, depense, dette
-        $table->decimal('montant', 10, 2);
-        $table->date('date');
-        $table->string('categorie')->nullable();
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('type');
+            $table->decimal('montant', 10, 2);
+            $table->date('date');
+            $table->string('categorie')->nullable();
+            $table->timestamps();
+        });
+    }
 
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('transactions');
     }
-
-
-
 };

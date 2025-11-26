@@ -1,61 +1,52 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
+import LoginForm from '../components/auth/LoginForm'
+import Notification from '../components/common/Notification'
+import { useNotification } from '../context/NotificationContext' // Fixed path
+import './Login.css'
 
+const Login = () => {
+  const { isAuthenticated } = useAuth()
 
-
-export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-
-  const handleChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      let result = await login(form.email, form.password);
-      console.log("Login successful:", result);
-
-      // ✅ backend يرجع { token: "...", message: "Login successful" }
-      localStorage.setItem("token", result.token);
-
-      navigate("/profile");
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Invalid credentials");
-    }
-  };
+  if (isAuthenticated) {
+    window.location.href = '/dashboard'
+    return null
+  }
 
   return (
-    <section className="card form">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Email</label>
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <label>Password</label>
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        {error && <div className="alert">{error}</div>}
-        <button className="btn">Login</button>
-      </form>
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
-    </section>
-  );
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-hero">
+          <div className="hero-content">
+            <h1>Finance Score</h1>
+            <p className="hero-subtitle">
+              Take control of your financial health with our intelligent scoring system. 
+              Track transactions, monitor your score, and make better financial decisions.
+            </p>
+            <div className="hero-features">
+              <div className="feature">
+                <span className="feature-icon">💰</span>
+                <span>Track Income & Expenses</span>
+              </div>
+              <div className="feature">
+                <span className="feature-icon">⭐</span>
+                <span>Real-time Financial Score</span>
+              </div>
+              <div className="feature">
+                <span className="feature-icon">📊</span>
+                <span>Detailed Reports & Analytics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="login-section">
+          <LoginForm />
+        </div>
+      </div>
+      <Notification />
+    </div>
+  )
 }
+
+export default Login

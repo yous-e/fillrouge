@@ -1,0 +1,142 @@
+.notifications-container {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: var(--z-tooltip);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 400px;
+  width: 100%;
+}
+
+.notification {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid;
+  overflow: hidden;
+  animation: notification-slide-in 0.3s ease-out;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.notification:hover {
+  transform: translateX(-4px);
+}
+
+.notification-success {
+  border-left-color: var(--success-color);
+}
+
+.notification-error {
+  border-left-color: var(--error-color);
+}
+
+.notification-warning {
+  border-left-color: var(--warning-color);
+}
+
+.notification-info {
+  border-left-color: var(--primary-color);
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.notification-message {
+  flex: 1;
+  color: var(--text-color);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  color: var(--text-color);
+  background-color: var(--secondary-light);
+}
+
+.notification-progress {
+  height: 3px;
+  background-color: currentColor;
+  animation: notification-progress linear forwards;
+  transform-origin: left;
+}
+
+.notification-success .notification-progress {
+  background-color: var(--success-color);
+}
+
+.notification-error .notification-progress {
+  background-color: var(--error-color);
+}
+
+.notification-warning .notification-progress {
+  background-color: var(--warning-color);
+}
+
+.notification-info .notification-progress {
+  background-color: var(--primary-color);
+}
+
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes notification-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .notifications-container {
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    left: var(--spacing-md);
+    max-width: none;
+  }
+
+  .notification {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .notifications-container {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    left: var(--spacing-sm);
+  }
+
+  .notification-content {
+    padding: var(--spacing-sm);
+  }
+}

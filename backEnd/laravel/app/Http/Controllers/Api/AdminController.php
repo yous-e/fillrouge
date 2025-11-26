@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,18 +10,18 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    /**
-     * Afficher tous les utilisateurs
-     */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->middleware('isAdmin');
+    }
+
     public function listUsers()
     {
         $users = User::all();
         return response()->json($users);
     }
 
-    /**
-     * Supprimer un utilisateur par ID
-     */
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);
@@ -32,9 +30,6 @@ class AdminController extends Controller
         return response()->json(['message' => 'Utilisateur supprimé avec succès']);
     }
 
-    /**
-     * Consulter les statistiques globales
-     */
     public function stats()
     {
         $totalUsers = User::count();
@@ -48,9 +43,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Attribuer un rôle à un utilisateur
-     */
     public function assignRole(Request $request, $userId)
     {
         $request->validate([

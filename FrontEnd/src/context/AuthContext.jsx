@@ -1,59 +1,103 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { login as loginApi, register as registerApi, getProfile, logout as logoutApi } from "../api/authService";
+import React, { createContext, useState, useContext, useEffect } from 'react'
+import { authService } from '../services/auth'
 
-const AuthContext = createContext();
+// Create and export the context
+export const AuthContext = createContext()
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
 
-  const fetchProfile = async () => {
-    try {
-      const { data } = await getProfile();
-      setUser(data);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async (email, password) => {
-    const { data } = await loginApi({ email, password });
-    localStorage.setItem("token", data.token);
-    await fetchProfile();
-    return data;
-  };
-
-  const register = async (payload) => {
-    const { data } = await registerApi(payload);
-    localStorage.setItem("token", data.token);
-    await fetchProfile();
-    return data;
-  };
-
-  const logout = async () => {
-    try {
-      await logoutApi();
-    } finally {
-      localStorage.removeItem("token");
-      setUser(null);
-    }
-  };
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [token, setToken] = useState(localStorage.getItem('token'))
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) fetchProfile();
-    else setLoading(false);
-  }, []);
+    if (token) {
+      authService.getProfile()
+        .then(userData => {
+          setUser(userData)
+        })
+        .catch((error) => {
+          console.error('Failed to get profile:', error)
+          localStorage.removeItem('token')
+          setToken(null)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      setLoading(false)
+    }
+  }, [token])
+
+  const login = async (email, password) => {
+    try {
+      const response = await authService.login(email, password)
+      const { user: userData, token: authToken } = response
+      
+      localStorage.setItem('token', authToken)
+      setToken(authToken)
+      setUser(userData)
+      
+      return { success: true, user: userData }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Login failed' 
+      }
+    }
+  }
+
+  const register = async (userData) => {
+    try {
+      const response = await authService.register(userData)
+      const { user: newUser, token: authToken } = response
+      
+      localStorage.setItem('token', authToken)
+      setToken(authToken)
+      setUser(newUser)
+      
+      return { success: true, user: newUser }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Registration failed' 
+      }
+    }
+  }
+
+  const logout = () => {
+    authService.logout()
+    localStorage.removeItem('token')
+    setToken(null)
+    setUser(null)
+  }
+
+  const updateProfile = (userData) => {
+    setUser(prevUser => ({ ...prevUser, ...userData }))
+  }
+
+  const value = {
+    user,
+    token,
+    loading,
+    login,
+    register,
+    logout,
+    updateProfile,
+    isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin'
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
-  );
-};
-
-const useAuth = () => useContext(AuthContext);
-
-export { AuthContext, AuthProvider, useAuth };
+  )
+}

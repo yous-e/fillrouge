@@ -29,7 +29,7 @@ class AuthController extends Controller
             "password" => Hash::make($request->password),
         ]);
 
-        Auth::login($user); // LOGIN AUTOMATIQUE
+        Auth::login($user);
 
         return response()->json(["user" => $user]);
     }
@@ -49,7 +49,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-    $token = $request->user()->createToken('auth_token')->plainTextToken;
+        $token = $request->user()->createToken('auth_token')->plainTextToken;
         return response()->json([
             "message" => "Logged in",
             "user" => Auth::user(),

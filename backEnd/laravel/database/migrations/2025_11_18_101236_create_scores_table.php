@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('scores', function (Blueprint $table) {
@@ -17,13 +14,10 @@ return new class extends Migration
             $table->integer('valeur');
             $table->string('couleur');
             $table->timestamp('date_calcul');
-            $table->timestamps(); // ضعها في النهاية
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('scores');

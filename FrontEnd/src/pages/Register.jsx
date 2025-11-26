@@ -1,75 +1,52 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
+import RegisterForm from '../components/auth/RegisterForm'
+import Notification from '../components/common/Notification'
+import { useNotification } from '../context/NotificationContext' // Fixed path
+import './Register.css'
 
-export default function Register() {
-  const { register } = useAuth();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    password_confirmation: ""
-  });
-  const [error, setError] = useState("");
+const Register = () => {
+  const { isAuthenticated } = useAuth()
 
-  const handleChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (form.password !== form.password_confirmation) {
-      setError("Passwords do not match");
-      return;
-    }
-    try {
-      let result = await register(form);
-      console.log("Registration successful:", result);
-
-      // ✅ backend يرجع { token: "...", message: "Registration successful" }
-      localStorage.setItem("token", result.token);
-
-      navigate("/profile");
-    } catch (err) {
-      console.error("Registration error:", err);
-      setError("Registration failed");
-    }
-  };
+  if (isAuthenticated) {
+    window.location.href = '/dashboard'
+    return null
+  }
 
   return (
-    <section className="card form">
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <input name="name" value={form.name} onChange={handleChange} required />
-        <label>Email</label>
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <label>Password</label>
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <label>Confirm Password</label>
-        <input
-          name="password_confirmation"
-          type="password"
-          value={form.password_confirmation}
-          onChange={handleChange}
-          required
-        />
-        {error && <div className="alert">{error}</div>}
-        <button className="btn">Create account</button>
-      </form>
-    </section>
-  );
+    <div className="register-page">
+      <div className="register-container">
+        <div className="register-hero">
+          <div className="hero-content">
+            <h1>Join Finance Score</h1>
+            <p className="hero-subtitle">
+              Start your journey to better financial health. 
+              Get insights, track progress, and achieve your financial goals.
+            </p>
+            <div className="hero-benefits">
+              <div className="benefit">
+                <span className="benefit-icon">🔒</span>
+                <span>Secure & Private</span>
+              </div>
+              <div className="benefit">
+                <span className="benefit-icon">📈</span>
+                <span>Track Financial Growth</span>
+              </div>
+              <div className="benefit">
+                <span className="benefit-icon">🎯</span>
+                <span>Personalized Insights</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="register-section">
+          <RegisterForm />
+        </div>
+      </div>
+      <Notification />
+    </div>
+  )
 }
+
+export default Register

@@ -7,41 +7,35 @@ use App\Http\Controllers\Api\ScoreController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\AdminController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-| Toutes les routes de ton backend FinanceScore
-|
-*/
-
-// Authentification
+// Authentication (Public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::get('/profile', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 
-// Routes protégées (utilisateurs connectés)
+// Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
+    
+    // Authentication
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/profile', [AuthController::class, 'profile']);
 
     // Transactions
     Route::apiResource('transactions', TransactionController::class);
 
-    // Score
+    // Scores
     Route::get('/score', [ScoreController::class, 'calculate']);
     Route::get('/score/history', [ScoreController::class, 'history']);
-    Route::get('/score/{id}', [ScoreController::class, 'show']);
+    Route::get('/score/latest', [ScoreController::class, 'show']);
 
-    // Rapports PDF
-    Route::post('/report/export', [ReportController::class, 'export']);
-    Route::get('/report/list', [ReportController::class, 'list']);
-    Route::get('/report/download/{id}', [ReportController::class, 'download']);
+    // Reports
+    Route::post('/reports/generate', [ReportController::class, 'generateReport']);
+    Route::get('/reports', [ReportController::class, 'getUserReports']);
+    Route::get('/reports/{id}/download', [ReportController::class, 'download']);
 
-    // Administration (protégé par middleware isAdmin)
-    Route::middleware(['isAdmin'])->group(function () {
-        Route::get('/admin/users', [AdminController::class, 'listUsers']);
-        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
-        Route::get('/admin/stats', [AdminController::class, 'stats']);
-        Route::post('/admin/users/{id}/role', [AdminController::class, 'assignRole']);
+    // Admin Routes
+    Route::middleware(['isAdmin'])->prefix('admin')->group(function () {
+        Route::get('/users', [AdminController::class, 'listUsers']);
+        Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
+        Route::get('/stats', [AdminController::class, 'stats']);
+        Route::post('/users/{id}/role', [AdminController::class, 'assignRole']);
     });
 });

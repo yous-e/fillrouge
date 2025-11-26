@@ -1,47 +1,35 @@
-import { useEffect, useState } from "react";
-import { getProfile } from "../api/authService";
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
+import Header from '../components/common/Header'
+import Sidebar from '../components/common/Sidebar'
+import Footer from '../components/common/Footer'
+import Notification from '../components/common/Notification'
+import Profile from '../components/auth/Profile'
+import './Profile.css'
 
-export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const ProfilePage = () => {
+  const { isAuthenticated } = useAuth()
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data } = await getProfile();
-        console.log("Profile data:", data);
-
-        // ✅ backend يرجع كائن المستخدم مباشرة (id, name, email, role)
-        setUser(data);
-      } catch (err) {
-        setError(
-          "Impossible de charger le profil. Vérifie ton token ou reconnecte-toi. : " +
-            err.message
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  if (loading) return <div className="loader">Chargement...</div>;
-  if (error) return <div className="alert">{error}</div>;
+  if (!isAuthenticated) {
+    window.location.href = '/login'
+    return null
+  }
 
   return (
-    <section className="card">
-      <h2>Mon Profil</h2>
-      {user ? (
-        <>
-          <p><strong>ID :</strong> {user.id}</p>
-          <p><strong>Nom :</strong> {user.name}</p>
-          <p><strong>Email :</strong> {user.email}</p>
-          <p><strong>Rôle :</strong> {user.role}</p>
-        </>
-      ) : (
-        <p>Aucun utilisateur connecté.</p>
-      )}
-    </section>
-  );
+    <div className="profile-page">
+      <Header />
+      <div className="main-layout">
+        <Sidebar />
+        <main className="main-content">
+          <div className="page-container">
+            <Profile />
+          </div>
+        </main>
+      </div>
+      <Footer />
+      <Notification />
+    </div>
+  )
 }
+
+export default ProfilePage

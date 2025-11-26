@@ -1,44 +1,35 @@
-import { useEffect, useState } from "react";
-import { listScores } from "../api/scoreService";
-import ScoreCard from "../components/ScoreCard";
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
+import Header from '../components/common/Header'
+import Sidebar from '../components/common/Sidebar'
+import Footer from '../components/common/Footer'
+import Notification from '../components/common/Notification'
+import ScoreDisplay from '../components/scores/ScoreDisplay'
+import './Scores.css'
 
-export default function Scores() {
-  const [scores, setScores] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+const ScoresPage = () => {
+  const { isAuthenticated } = useAuth()
 
-  const load = async () => {
-    try {
-      const { data } = await listScores();
-      // ✅ backend يرجع مصفوفة من النقاط
-      setScores(Array.isArray(data) ? data : data.data);
-    } catch (err) {
-      console.error("Erreur chargement scores:", err);
-      setError("Impossible de charger les scores.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  if (loading) return <div className="loader">Chargement...</div>;
-  if (error) return <div className="alert">{error}</div>;
+  if (!isAuthenticated) {
+    window.location.href = '/login'
+    return null
+  }
 
   return (
-    <section>
-      <h2>Mes Scores</h2>
-      {scores.length === 0 ? (
-        <p>Aucun score disponible.</p>
-      ) : (
-        <div className="grid">
-          {scores.map((s) => (
-            <ScoreCard key={s.id} score={s} />
-          ))}
-        </div>
-      )}
-    </section>
-  );
+    <div className="scores-page">
+      <Header />
+      <div className="main-layout">
+        <Sidebar />
+        <main className="main-content">
+          <div className="page-container">
+            <ScoreDisplay />
+          </div>
+        </main>
+      </div>
+      <Footer />
+      <Notification />
+    </div>
+  )
 }
+
+export default ScoresPage
